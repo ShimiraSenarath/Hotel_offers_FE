@@ -6,13 +6,14 @@ import {
   PaginatedResponse, 
   LoginCredentials, 
   LoginResponse, 
-  CreateHotelOfferRequest 
+  CreateHotelOfferRequest,
+  User
 } from '@/types';
 
 // Custom hook for data fetching
 function useApiData<T>(
   apiCall: () => Promise<{ data?: T; error?: string; success: boolean }>,
-  dependencies: any[] = []
+  dependencies: unknown[] = []
 ) {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
@@ -214,7 +215,7 @@ export function useDeleteHotelOffer() {
 export function useAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const tokenCheckIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const logout = useCallback(() => {

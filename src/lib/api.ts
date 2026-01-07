@@ -1,4 +1,6 @@
 // API configuration and helper functions
+import { Bank, HotelOffer, PaginatedResponse, LoginResponse, CreateHotelOfferRequest } from '@/types';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
 // Get auth token from localStorage
@@ -195,10 +197,10 @@ async function apiRequest<T>(
 
 export const api = {
   // Public endpoints (no auth required)
-  getBanks: () => apiRequest<any>('/banks', {}, false),
+  getBanks: () => apiRequest<Bank[]>('/banks', {}, false),
   
   getHotelOffers: (page: number = 0, size: number = 20) =>
-    apiRequest<any>(`/offers?page=${page}&size=${size}`, {}, false),
+    apiRequest<PaginatedResponse<HotelOffer>>(`/offers?page=${page}&size=${size}`, {}, false),
   
   searchHotelOffers: (params: {
     country?: string;
@@ -238,40 +240,40 @@ export const api = {
     queryParams.append('page', (params.page || 0).toString());
     queryParams.append('size', (params.size || 20).toString());
     
-    return apiRequest<any>(`/offers/search?${queryParams.toString()}`, {}, false);
+    return apiRequest<PaginatedResponse<HotelOffer>>(`/offers/search?${queryParams.toString()}`, {}, false);
   },
 
   getHotelOfferById: (id: number) =>
-    apiRequest<any>(`/offers/${id}`, {}, false),
+    apiRequest<HotelOffer>(`/offers/${id}`, {}, false),
 
   // Auth endpoints
   register: (data: { name: string; email: string; password: string }) =>
-    apiRequest<any>('/auth/register', {
+    apiRequest<LoginResponse>('/auth/register', {
       method: 'POST',
       body: JSON.stringify(data),
     }, false),
 
   login: (credentials: { email: string; password: string }) =>
-    apiRequest<any>('/auth/login', {
+    apiRequest<LoginResponse>('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     }, false),
 
   // Protected endpoints (auth required)
-  createHotelOffer: (data: any) =>
-    apiRequest<any>('/offers', {
+  createHotelOffer: (data: CreateHotelOfferRequest) =>
+    apiRequest<HotelOffer>('/offers', {
       method: 'POST',
       body: JSON.stringify(data),
     }, true),
 
-  updateHotelOffer: (id: number, data: any) =>
-    apiRequest<any>(`/offers/${id}`, {
+  updateHotelOffer: (id: number, data: CreateHotelOfferRequest) =>
+    apiRequest<HotelOffer>(`/offers/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     }, true),
 
   deleteHotelOffer: (id: number) =>
-    apiRequest<any>(`/offers/${id}`, {
+    apiRequest<void>(`/offers/${id}`, {
       method: 'DELETE',
     }, true),
 };

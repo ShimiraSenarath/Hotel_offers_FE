@@ -46,7 +46,7 @@ export default function HotelOffersPage() {
     );
   }, [offers, searchTerm]);
 
-  const handleFilterChange = (key: keyof FilterOptions, value: any) => {
+  const handleFilterChange = (key: keyof FilterOptions, value: FilterOptions[keyof FilterOptions]) => {
     setFilters(prev => ({
       ...prev,
       [key]: value

@@ -1,5 +1,7 @@
 // API configuration and base service
 import { API_CONFIG } from '@/config/api';
+import { Bank, HotelOffer, PaginatedResponse, CreateHotelOfferRequest, LoginResponse, User } from '@/types';
+
 const API_BASE_URL = API_CONFIG.BASE_URL;
 
 interface ApiResponse<T> {
@@ -82,7 +84,7 @@ class ApiService {
   }
 
   // Hotel Offers API
-  async getHotelOffers(page = 0, size = 20): Promise<ApiResponse<PaginatedResponse<any>>> {
+  async getHotelOffers(page = 0, size = 20): Promise<ApiResponse<PaginatedResponse<HotelOffer>>> {
     return this.request(`/offers?page=${page}&size=${size}`);
   }
 
@@ -95,7 +97,7 @@ class ApiService {
     cardType?: string;
     page?: number;
     size?: number;
-  }): Promise<ApiResponse<PaginatedResponse<any>>> {
+  }): Promise<ApiResponse<PaginatedResponse<HotelOffer>>> {
     const searchParams = new URLSearchParams();
     
     if (params.country) searchParams.append('country', params.country);
@@ -110,18 +112,18 @@ class ApiService {
     return this.request(`/offers/search?${searchParams.toString()}`);
   }
 
-  async getHotelOfferById(id: string): Promise<ApiResponse<any>> {
+  async getHotelOfferById(id: string): Promise<ApiResponse<HotelOffer>> {
     return this.request(`/offers/${id}`);
   }
 
-  async createHotelOffer(offer: any): Promise<ApiResponse<any>> {
+  async createHotelOffer(offer: CreateHotelOfferRequest): Promise<ApiResponse<HotelOffer>> {
     return this.request('/offers', {
       method: 'POST',
       body: JSON.stringify(offer),
     });
   }
 
-  async updateHotelOffer(id: string, offer: any): Promise<ApiResponse<any>> {
+  async updateHotelOffer(id: string, offer: CreateHotelOfferRequest): Promise<ApiResponse<HotelOffer>> {
     return this.request(`/offers/${id}`, {
       method: 'PUT',
       body: JSON.stringify(offer),
@@ -135,23 +137,23 @@ class ApiService {
   }
 
   // Banks API
-  async getBanks(): Promise<ApiResponse<any[]>> {
+  async getBanks(): Promise<ApiResponse<Bank[]>> {
     return this.request('/banks');
   }
 
-  async getBankById(id: string): Promise<ApiResponse<any>> {
+  async getBankById(id: string): Promise<ApiResponse<Bank>> {
     return this.request(`/banks/${id}`);
   }
 
   // Auth API
-  async login(credentials: { email: string; password: string }): Promise<ApiResponse<any>> {
+  async login(credentials: { email: string; password: string }): Promise<ApiResponse<LoginResponse>> {
     const response = await this.request('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     });
 
     // If login successful, store the token
-    const data = response.data as { token?: string } | undefined;
+    const data = response.data as LoginResponse | undefined;
     if (data && typeof data.token === 'string') {
       this.setToken(data.token);
     }
@@ -159,7 +161,7 @@ class ApiService {
     return response;
   }
 
-  async getCurrentUser(): Promise<ApiResponse<any>> {
+  async getCurrentUser(): Promise<ApiResponse<User>> {
     return this.request('/auth/me');
   }
 
