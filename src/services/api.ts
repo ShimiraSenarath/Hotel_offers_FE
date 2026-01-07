@@ -9,14 +9,6 @@ interface ApiResponse<T> {
   error?: string;
 }
 
-interface PaginatedResponse<T> {
-  content: T[];
-  totalElements: number;
-  totalPages: number;
-  size: number;
-  number: number;
-}
-
 class ApiService {
   private baseURL: string;
   private token: string | null = null;
@@ -158,7 +150,7 @@ class ApiService {
       this.setToken(data.token);
     }
 
-    return response;
+    return response as ApiResponse<LoginResponse>;
   }
 
   async getCurrentUser(): Promise<ApiResponse<User>> {
