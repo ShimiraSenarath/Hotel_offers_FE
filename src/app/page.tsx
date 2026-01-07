@@ -20,9 +20,28 @@ export default function Home() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const heroImageUrl = typeof heroImage === 'string' 
-    ? heroImage 
-    : (heroImage as any)?.src || heroImage;
+  // Type for Next.js image imports
+  type NextImageImport = 
+    | string 
+    | { src: string; width?: number; height?: number; blurDataURL?: string } 
+    | { default: { src: string } };
+  
+  const getImageUrl = (image: NextImageImport): string => {
+    if (typeof image === 'string') {
+      return image;
+    }
+    if (typeof image === 'object' && image !== null) {
+      if ('src' in image) {
+        return image.src;
+      }
+      if ('default' in image && typeof image.default === 'object' && image.default !== null && 'src' in image.default) {
+        return image.default.src;
+      }
+    }
+    return '';
+  };
+  
+  const heroImageUrl = getImageUrl(heroImage as NextImageImport);
 
   return (
     <div className="bg-white overflow-x-hidden">
